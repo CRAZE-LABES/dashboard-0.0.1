@@ -1,0 +1,55 @@
+{
+  "dashboard": {
+    "name": "CrazeDash",
+    "description": "Minecraft Server Management Dashboard",
+    "version": "1.0.0",
+    "theme": {
+      "primaryColor": "#8B5CF6",
+      "secondaryColor": "#A855F7",
+      "accentColor": "#9333EA"
+    }
+  },
+  "server": {
+    "port": 5000,
+    "rateLimit": {
+      "windowMs": 900000,
+      "max": 100
+    }
+  },
+  "shop": {
+    "enabled": true,
+    "currency": "USD",
+    "products": {
+      "ram": {
+        "name": "RAM",
+        "unit": "GB",
+        "price": 0.50,
+        "max": 32
+      },
+      "cpu": {
+        "name": "CPU",
+        "unit": "%",
+        "price": 0.10,
+        "max": 400
+      },
+      "disk": {
+        "name": "Disk Space",
+        "unit": "GB",
+        "price": 0.25,
+        "max": 100
+      },
+      "slots": {
+        "name": "Server Slots",
+        "unit": "slot",
+        "price": 5.00,
+        "max": 10
+      }
+    }
+  },
+  "defaults": {
+    "ram": 1,
+    "cpu": 50,
+    "disk": 5,
+    "slots": 1
+  }
+}
