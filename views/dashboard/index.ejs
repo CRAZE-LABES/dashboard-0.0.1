@@ -1,0 +1,106 @@
+<%- include('../partials/header') %>
+<%- include('../partials/navbar') %>
+
+<div class="dashboard-container">
+    <div class="dashboard-header">
+        <h1>Welcome back, <%= user.username %>!</h1>
+        <p>Manage your Minecraft servers and resources</p>
+    </div>
+    
+    <div class="dashboard-grid">
+        <!-- Quick Stats -->
+        <div class="stats-row">
+            <div class="stat-card">
+                <div class="stat-icon servers">
+                    <i class="fas fa-server"></i>
+                </div>
+                <div class="stat-info">
+                    <h3><%= servers.length %></h3>
+                    <p>Active Servers</p>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon ram">
+                    <i class="fas fa-memory"></i>
+                </div>
+                <div class="stat-info">
+                    <h3><%= resources.ram %>GB</h3>
+                    <p>RAM Available</p>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon cpu">
+                    <i class="fas fa-microchip"></i>
+                </div>
+                <div class="stat-info">
+                    <h3><%= resources.cpu %>%</h3>
+                    <p>CPU Available</p>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon disk">
+                    <i class="fas fa-hdd"></i>
+                </div>
+                <div class="stat-info">
+                    <h3><%= resources.disk %>GB</h3>
+                    <p>Disk Space</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Quick Actions -->
+        <div class="quick-actions">
+            <h2>Quick Actions</h2>
+            <div class="action-buttons">
+                <a href="/dashboard/create" class="action-btn create">
+                    <i class="fas fa-plus"></i>
+                    <span>Create Server</span>
+                </a>
+                <a href="/shop" class="action-btn shop">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span>Buy Resources</span>
+                </a>
+                <a href="/dashboard/servers" class="action-btn manage">
+                    <i class="fas fa-cogs"></i>
+                    <span>Manage Servers</span>
+                </a>
+            </div>
+        </div>
+        
+        <!-- Recent Servers -->
+        <div class="recent-servers">
+            <h2>Your Servers</h2>
+            <% if (servers.length > 0) { %>
+                <div class="servers-list">
+                    <% servers.slice(0, 3).forEach(server => { %>
+                        <div class="server-card">
+                            <div class="server-info">
+                                <h3><%= server.attributes?.name || 'Unnamed Server' %></h3>
+                                <p><%= server.attributes?.description || 'No description' %></p>
+                            </div>
+                            <div class="server-status online">
+                                <i class="fas fa-circle"></i>
+                                Online
+                            </div>
+                        </div>
+                    <% }) %>
+                </div>
+            <% } else { %>
+                <div class="empty-state">
+                    <i class="fas fa-server"></i>
+                    <h3>No servers yet</h3>
+                    <p>Create your first Minecraft server to get started!</p>
+                    <a href="/dashboard/create" class="btn btn-primary">
+                        <i class="fas fa-plus"></i>
+                        Create Server
+                    </a>
+                </div>
+            <% } %>
+        </div>
+    </div>
+</div>
+
+<%- include('../partials/footer') %>
