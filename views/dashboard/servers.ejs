@@ -1,0 +1,149 @@
+<%- include('../partials/header') %>
+<%- include('../partials/navbar') %>
+
+<div class="dashboard-container">
+    <div class="dashboard-header">
+        <h1>Server Management</h1>
+        <a href="/dashboard/create" class="btn btn-primary">
+            <i class="fas fa-plus"></i>
+            Create New Server
+        </a>
+    </div>
+    
+    <div class="servers-grid">
+        <% if (servers && servers.length > 0) { %>
+            <% servers.forEach(server => { %>
+                <div class="server-card-detailed">
+                    <div class="server-header">
+                        <h3><%= server.attributes?.name || 'Unnamed Server' %></h3>
+                        <div class="server-status online">
+                            <i class="fas fa-circle"></i>
+                            Online
+                        </div>
+                    </div>
+                    
+                    <div class="server-info">
+                        <p><%= server.attributes?.description || 'No description available' %></p>
+                        <div class="server-specs">
+                            <span><i class="fas fa-memory"></i> 2GB RAM</span>
+                            <span><i class="fas fa-microchip"></i> 100% CPU</span>
+                            <span><i class="fas fa-hdd"></i> 10GB Disk</span>
+                        </div>
+                    </div>
+                    
+                    <div class="server-actions">
+                        <button class="btn btn-success btn-sm" onclick="controlServer('<%= server.attributes?.uuid %>', 'start')">
+                            <i class="fas fa-play"></i>
+                            Start
+                        </button>
+                        <button class="btn btn-warning btn-sm" onclick="controlServer('<%= server.attributes?.uuid %>', 'restart')">
+                            <i class="fas fa-redo"></i>
+                            Restart
+                        </button>
+                        <button class="btn btn-danger btn-sm" onclick="controlServer('<%= server.attributes?.uuid %>', 'stop')">
+                            <i class="fas fa-stop"></i>
+                            Stop
+
+---
+
+// routes/dashboard.js
+const express = require('express');
+const axios = require('axios');
+const config = require('../config.json');
+const router = express.Router();
+
+// Middleware to check authentication
+function isAuthenticated(req, res, next) {
+  if (req.isAuthenticated()) {
+    return next();
+  }
+  res.redirect('/auth/login');
+}
+
+// Dashboard home
+router.get('/', isAuthenticated, async (req, res) => {
+  try {
+    const servers = await getUserServers(req.user.id);
+    const userResources = await getUserResources(req.user.id);
+    
+    res.render('dashboard/index', {
+      user: req.user,
+      servers: servers,
+      resources: userResources,
+      dashboardName: process.env.DASHBOARD_NAME || 'CrazeDash'
+    });
+  } catch (error) {
+    console.error('Dashboard error:', error);
+    res.render('dashboard/index', {
+      user: req.user,
+      servers: [],
+      resources: config.defaults,
+      dashboardName: process.env.DASHBOARD_NAME || 'CrazeDash',
+      error: 'Failed to load dashboard data'
+    });
+  }
+});
+
+// Server management
+router.get('/servers', isAuthenticated, async (req, res) => {
+  try {
+    const servers = await getUserServers(req.user.id);
+    res.render('dashboard/servers', {
+      user: req.user,
+      servers: servers,
+      dashboardName: process.env.DASHBOARD_NAME || 'CrazeDash'
+    });
+  } catch (error) {
+    res.render('dashboard/servers', {
+      user: req.user,
+      servers: [],
+      dashboardName: process.env.DASHBOARD_NAME || 'CrazeDash',
+      error: 'Failed to load servers'
+    });
+  }
+});
+
+// Create server
+router.get('/create', isAuthenticated, (req, res) => {
+  res.render('dashboard/create', {
+    user: req.user,
+    dashboardName: process.env.DASHBOARD_NAME || 'CrazeDash'
+  });
+});
+
+// Profile/Settings
+router.get('/profile', isAuthenticated, (req, res) => {
+  res.render('dashboard/profile', {
+    user: req.user,
+    dashboardName: process.env.DASHBOARD_NAME || 'CrazeDash'
+  });
+});
+
+// Helper functions for panel API
+async function getUserServers(userId) {
+  try {
+    const response = await axios.get(`${process.env.PANEL_URL}/api/application/servers`, {
+      headers: {
+        'Authorization': `Bearer ${process.env.PANEL_API_KEY}`,
+        'Content-Type': 'application/json'
+      }
+    });
+    
+    return response.data.data || [];
+  } catch (error) {
+    console.error('Failed to fetch servers:', error);
+    return [];
+  }
+}
+
+async function getUserResources(userId) {
+  // Mock implementation - replace with actual database/API call
+  return {
+    ram: 2,
+    cpu: 100,
+    disk: 10,
+    slots: 1
+  };
+}
+
+module.exports = router;
